@@ -1,0 +1,68 @@
+﻿@model IEnumerable<MLV.Business.Models.Produto>
+
+<p>
+    <a class="btn btn-primary" asp-action="Criar">Novo Produto</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.CaminhoImagem)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estoque)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Valor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CriadoEm)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model == null || !Model.Any())
+        {
+            <tr>
+                <td colspan="7" class="text-center">Nenhum produto encontrado.</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var produto in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@Url.Content(produto.CaminhoImagem)" alt="Imagem do Produto" style="width: 50px; height: auto;" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => produto.Nome)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => produto.Descricao)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => produto.Estoque)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => produto.Valor)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => produto.CriadoEm)
+                    </td>
+                    <td>
+                        <a asp-action="Alterar" asp-route-id="@produto.Id">Editar</a> |
+                        <a asp-action="Remover" asp-route-id="@produto.Id">Remover</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

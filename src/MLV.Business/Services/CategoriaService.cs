@@ -13,15 +13,14 @@ public class CategoriaService : ServiceHandler, ICategoriaService
     private readonly string _usuarioLogado;
     public CategoriaService(ICategoriaRepository categoriaRepository, IProdutoRepository produtoRepository, IHttpContextAccessor httpContextAccessor)
     {
-        var httpContext = httpContextAccessor.HttpContext;
-        if (httpContext == null || httpContext.User.Identity == null || !httpContext.User.Identity.IsAuthenticated)
-        {
-            throw new UnauthorizedAccessException("Usuário não está autenticado.");
-        }
-
-        _usuarioLogado = httpContext.User.Identity.Name;
         _categoriaRepository = categoriaRepository;
         _produtoRepository = produtoRepository;
+
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext != null && httpContext.User.Identity != null && httpContext.User.Identity.IsAuthenticated)
+        {
+            _usuarioLogado = httpContext.User.Identity.Name;
+        }
     }
 
     public async Task<ValidationResult> Adicionar(CategoriaRequest request)

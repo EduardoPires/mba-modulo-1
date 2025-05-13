@@ -1,0 +1,11 @@
+﻿@model MLV.Business.Commands.ProdutoRequestAlteracao
+
+<div class="col-md-4">
+    <div class="form-group">
+        <img src="@Url.Content(Model.CaminhoImagem)" alt="Imagem do Produto" style="width: 150px; height: auto;" />
+        <span asp-validation-for="Imagem" class="text-danger"></span>
+
+        <input asp-for="Imagem" class="form-control" />
+        <span asp-validation-for="Imagem" class="text-danger"></span>
+    </div>
+</div>

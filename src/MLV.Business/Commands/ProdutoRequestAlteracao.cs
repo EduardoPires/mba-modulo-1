@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace MLV.Business.Commands;
 
-public class ProdutoRequest : RequestBase
+public class ProdutoRequestAlteracao : RequestBase
 {
     [JsonIgnore]
     public Guid Id { get; set; }
@@ -16,12 +16,9 @@ public class ProdutoRequest : RequestBase
     public IFormFile Imagem { get; set; }
 
     [JsonIgnore]
+    public string CaminhoImagem { get; set; }
+    [JsonIgnore]
     public string WebRootPath { get; set; }
-
-    public ProdutoRequest()
-    {
-        Id = Guid.NewGuid();
-    }
 
     public override bool IsValid()
     {
@@ -30,13 +27,10 @@ public class ProdutoRequest : RequestBase
         return ValidationResult.IsValid;
     }
 
-    private sealed class ProdutoValidation : AbstractValidator<ProdutoRequest>
+    private sealed class ProdutoValidation : AbstractValidator<ProdutoRequestAlteracao>
     {
         public ProdutoValidation()
         {
-            RuleFor(m => m.Id)
-                .NotEmpty()
-                .WithMessage("O campo {PropertyName} precisa ser fornecido");
             RuleFor(m => m.CategoriaId)
                 .NotEmpty()
                 .WithMessage("O campo {PropertyName} precisa ser fornecido");
@@ -56,9 +50,6 @@ public class ProdutoRequest : RequestBase
             RuleFor(m => m.Estoque)
                 .GreaterThan(0)
                 .WithMessage("O campo {PropertyName} precisa ser fornecido e deve ser maior do que zero");
-            RuleFor(m => m.Imagem)
-                .NotEmpty()
-                .WithMessage("O campo {PropertyName} precisa ser fornecido");
         }
     }
 }

@@ -5,13 +5,14 @@ using MLV.Business.Commands;
 using MLV.Business.Data.Repository.Interfaces;
 using MLV.Business.Models;
 using MLV.Business.Services;
+using MLV.Business.Services.Interfaces;
 
 namespace MLV.ApiRest.Controllers;
 
 [Authorize]
 [Route("api/produtos")]
 public class ProdutoController(IProdutoRepository produtoRepository,
-                      ProdutoService produtoService) : MainController
+                      IProdutoService produtoService) : MainController
 {
     [AllowAnonymous]
     [HttpGet()]
@@ -38,8 +39,7 @@ public class ProdutoController(IProdutoRepository produtoRepository,
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     public async Task<ActionResult> Criar(ProdutoRequest request)
     {
-        request.Scheme = Request.Scheme;
-        request.Host = $"{Request.Host}";
+        request.WebRootPath = "D:\\Estudos\\MBA\\mba-modulo-1\\src\\MLV.MVC\\wwwroot";
 
         var result = await produtoService.Adicionar(request);
 
@@ -53,7 +53,7 @@ public class ProdutoController(IProdutoRepository produtoRepository,
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
-    public async Task<ActionResult> Alterar(Guid id, ProdutoRequest request)
+    public async Task<ActionResult> Alterar(Guid id, ProdutoRequestAlteracao request)
     {
         var produto = await produtoRepository.ObterPorId(id);
 
@@ -61,8 +61,6 @@ public class ProdutoController(IProdutoRepository produtoRepository,
             return NotFound();
 
         request.Id = id;
-        request.Scheme = Request.Scheme;
-        request.Host = $"{Request.Host}";
         var result = await produtoService.Alterar(request);
 
         if (!result.IsValid)

@@ -14,27 +14,36 @@ public class ProdutoService : ServiceHandler, IProdutoService
     private readonly ICategoriaRepository _categoriaRepository;
     private readonly Guid _userId;
     private readonly string _usuarioLogado;
-    private readonly string _diretorioBase = "../../Imagens";
+    private readonly string _diretorioBase = "uploads";
 
     public ProdutoService(IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository, IHttpContextAccessor httpContextAccessor)
     {
-        var httpContext = httpContextAccessor.HttpContext;
-        if (httpContext == null || httpContext.User.Identity == null || !httpContext.User.Identity.IsAuthenticated)
-        {
-            throw new UnauthorizedAccessException("Usuário não está autenticado.");
-        }
-
-        _userId = Guid.Parse(httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
-        _usuarioLogado = httpContext.User.Identity.Name;
         _produtoRepository = produtoRepository;
         _categoriaRepository = categoriaRepository;
+
+        var httpContext = httpContextAccessor.HttpContext;
+        if (httpContext != null && httpContext.User.Identity != null && httpContext.User.Identity.IsAuthenticated)
+        {
+            _userId = Guid.Parse(httpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value);
+            _usuarioLogado = httpContext.User.Identity.Name;
+        }
+    }
+
+    public async Task<IEnumerable<Produto>> ObterProdutosPorVendedorId()
+    {
+        var produtos = await _produtoRepository.ObterPorVendedorId(_userId);
+        if (produtos is null)
+        {
+            return [];
+        }
+        return produtos;
     }
 
     public async Task<ValidationResult> Adicionar(ProdutoRequest request)
     {
         if (!request.IsValid()) return request.ValidationResult;
 
-        var caminhoImagem = ObterCaminhoDaImagem(request.Imagem);
+        var caminhoImagem = await ObterCaminhoDaImagem(request.Imagem, request.WebRootPath);
 
         if (string.IsNullOrWhiteSpace(caminhoImagem))
             return ValidationResult;
@@ -47,14 +56,12 @@ public class ProdutoService : ServiceHandler, IProdutoService
             return ValidationResult;
         }
 
-        await SalvarImagem(caminhoImagem, request.Imagem);
-
         _produtoRepository.Adicionar(produto);
 
         return await PersistirDados(_produtoRepository.UnitOfWork);
     }
 
-    public async Task<ValidationResult> Alterar(ProdutoRequest request)
+    public async Task<ValidationResult> Alterar(ProdutoRequestAlteracao request)
     {
         if (!request.IsValid()) return request.ValidationResult;
 
@@ -66,12 +73,14 @@ public class ProdutoService : ServiceHandler, IProdutoService
             return ValidationResult;
         }
 
-        var caminhoImagem = ObterCaminhoDaImagem(request.Imagem);
+        produto.AtualizarProduto(request.CategoriaId, request.Nome, request.Descricao, request.Valor, request.Estoque, _usuarioLogado);
 
-        if (string.IsNullOrWhiteSpace(caminhoImagem))
-            return ValidationResult;
-
-        produto.AtualizarProduto(request.CategoriaId, request.Nome, request.Descricao, request.Valor, request.Estoque, caminhoImagem, _usuarioLogado);
+        if (request.Imagem != null && request.Imagem.Length > 0)
+        {
+            RemoverImagem(request, produto);
+            var caminhoImagem = await ObterCaminhoDaImagem(request.Imagem, request.WebRootPath);
+            produto.AtualizarImagem(caminhoImagem);
+        }
 
         if (!await ValidarCategoriaExiste(produto.CategoriaId))
         {
@@ -84,8 +93,6 @@ public class ProdutoService : ServiceHandler, IProdutoService
             AdicionarErro("Este produto não pertence ao seu catálogo");
             return ValidationResult;
         }
-
-        await SalvarImagem(caminhoImagem, request.Imagem);
 
         _produtoRepository.Atualizar(produto);
 
@@ -132,7 +139,7 @@ public class ProdutoService : ServiceHandler, IProdutoService
         return produto is not null && produto.FirstOrDefault(p => p.Id == id) is not null;
     }
 
-    private string ObterCaminhoDaImagem(IFormFile arquivo)
+    private async Task<string> ObterCaminhoDaImagem(IFormFile arquivo, string webRootPath)
     {
         if (arquivo == null || arquivo.Length == 0)
         {
@@ -150,16 +157,26 @@ public class ProdutoService : ServiceHandler, IProdutoService
 
         string nomeArquivo = $"{Guid.NewGuid()}{extensao}";
 
-        string caminhoCompleto = Path.Combine(_diretorioBase, nomeArquivo);
+        var uploadsFolder = Path.Combine(webRootPath, _diretorioBase);
+        Directory.CreateDirectory(uploadsFolder);
 
-        var caminhoCompleto2 = Path.GetFullPath(_diretorioBase);
+        var filePath = Path.Combine(uploadsFolder, nomeArquivo);
 
-        return caminhoCompleto;
+        await SalvarImagem(filePath, arquivo);
+
+        return $"/{_diretorioBase}/{nomeArquivo}";
     }
 
     private static async Task SalvarImagem(string caminhoCompleto, IFormFile arquivo)
     {
         using var stream = new FileStream(caminhoCompleto, FileMode.Create);
         await arquivo.CopyToAsync(stream);
+    }
+
+    private void RemoverImagem(ProdutoRequestAlteracao request, Produto produto)
+    {
+        var caminhoImagemArray = produto.CaminhoImagem.Split("/");
+        var imagemId = caminhoImagemArray[^1];
+        File.Delete($"{request.WebRootPath}/{_diretorioBase}/{imagemId}");
     }
 }

@@ -19,4 +19,14 @@
     <ProjectReference Include="..\MLV.Business\MLV.Business.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\uploads\imagem-base.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

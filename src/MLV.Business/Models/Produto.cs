@@ -1,4 +1,5 @@
 ﻿using MLV.Business.Data;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace MLV.Business.Models;
@@ -11,9 +12,11 @@ public class Produto : Entity
     public Guid VendedorId { get; private set; }
     [Required]
     public string Nome { get; private set; }
+    [DisplayName("Descrição")]
     public string Descricao { get; private set; }
     public decimal Valor { get; private set; }
     public int Estoque { get; private set; }
+    [DisplayName("Imagem")]
     public string CaminhoImagem { get; private set; }
 
     //EF Relations
@@ -33,14 +36,18 @@ public class Produto : Entity
         UsuarioCriacao = usuarioCriacao;
     }
 
-    public void AtualizarProduto(Guid categoriaId, string nome, string descricao, decimal valor, int estoque, string caminhoImagem, string usuarioAlteracao)
+    public void AtualizarProduto(Guid categoriaId, string nome, string descricao, decimal valor, int estoque, string usuarioAlteracao)
     {
         CategoriaId = categoriaId;
         Nome = nome.Trim();
         Descricao = descricao.Trim();
         Valor = valor;
         Estoque = estoque;
-        CaminhoImagem = caminhoImagem;
         UsuarioAlteracao = usuarioAlteracao;
+    }
+
+    public void AtualizarImagem(string caminhoImagem)
+    {
+        CaminhoImagem = caminhoImagem;
     }
 }

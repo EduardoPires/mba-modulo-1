@@ -1,0 +1,52 @@
+﻿@model MLV.Business.Commands.ProdutoRequestAlteracao
+
+<h4>Produto: @Model.Nome</h4>
+<hr />
+<div class="row">
+    <form asp-action="Alterar" asp-controller="Produtos" method="post" enctype="multipart/form-data">
+        <div class="col-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CategoriaId" class="control-label"></label>
+                <select asp-for="CategoriaId" class="form-control" asp-items="ViewBag.Categorias"></select>
+                <span asp-validation-for="CategoriaId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nome" class="control-label"></label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Descricao" class="control-label"></label>
+                <input asp-for="Descricao" class="form-control" />
+                <span asp-validation-for="Descricao" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Valor" class="control-label"></label>
+                <input asp-for="Valor" class="form-control" />
+                <span asp-validation-for="Valor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Estoque" class="control-label"></label>
+                <input asp-for="Estoque" class="form-control" />
+                <span asp-validation-for="Estoque" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <partial name="_AlterarImagem" />
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Alterar" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div>
+    <a asp-action="Index">Voltar para lista</a>
+</div>

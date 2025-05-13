@@ -26,9 +26,9 @@ public class CategoriasController(ICategoriaService categoriaService, ICategoria
 
     [HttpPost()]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Criar(CategoriaRequest command)
+    public async Task<IActionResult> Criar(CategoriaRequest request)
     {
-        var result = await categoriaService.Adicionar(command);
+        var result = await categoriaService.Adicionar(request);
 
         if (!result.IsValid)
         {
@@ -36,13 +36,13 @@ public class CategoriasController(ICategoriaService categoriaService, ICategoria
             {
                 ModelState.AddModelError("", item.ErrorMessage);
             }
-            return View(nameof(Criar), command);
+            return View(nameof(Criar), request);
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    [AllowAnonymous]
+    [HttpGet()]
     public async Task<IActionResult> Alterar(Guid id)
     {
         var categoria = await categoriaRepository.ObterPorId(id);
