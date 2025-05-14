@@ -27,7 +27,7 @@ public class CategoriaService : ServiceHandler, ICategoriaService
     {
         if (!request.IsValid()) return request.ValidationResult;
 
-        var categoria = new Categoria(request.Id, request.Nome, _usuarioLogado);
+        var categoria = new Categoria(request.Id, request.Nome, request.Descricao, _usuarioLogado);
 
         if (!await ValidarCategoriaUnicaPorNome(categoria.Nome))
         {
@@ -52,7 +52,7 @@ public class CategoriaService : ServiceHandler, ICategoriaService
             return ValidationResult;
         }
 
-        categoria.AtualizarNome(request.Nome, _usuarioLogado);
+        categoria.Atualizar(request.Nome, request.Descricao, _usuarioLogado);
 
         if (!await ValidarCategoriaUnicaPorNome(categoria.Nome, categoria.Id))
         {

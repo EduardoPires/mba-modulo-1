@@ -32,6 +32,7 @@ public class ProdutosController(IProdutoService produtoService, IProdutoReposito
     public async Task<IActionResult> Criar(ProdutoRequest request)
     {
         request.WebRootPath = webHostEnvironment.WebRootPath;
+        ViewBag.Categorias = new SelectList(await categoriaRepository.ObterTodos(), "Id", "Nome");
 
         var result = await produtoService.Adicionar(request);
 

@@ -41,8 +41,9 @@ public class CategoriaRepository(MlvDbContext context) : ICategoriaRepository
 
     public async Task<Categoria> ObterPorNome(string nome)
     {
+        var nomeTratado = nome.ToLower();
         return await context.Categorias
-            .FirstOrDefaultAsync(c => c.Nome.ToUpper().Equals(nome.ToUpper()));
+            .FirstOrDefaultAsync(c => c.Nome.ToLower() == nomeTratado);
     }
 
     public void Dispose()

@@ -59,13 +59,13 @@ public static class DbMigrationHelper
 
         if (!context.Categorias.Any())
         {
-            await context.Categorias.AddAsync(new Categoria(categoriaId, "Eletrônicos, TV e Áudio", email));
+            await context.Categorias.AddAsync(new Categoria(categoriaId, "Eletrônicos, TV e Áudio", "", email));
             await context.SaveChangesAsync();
         }
 
         if (!context.Produtos.Any())
         {
-            await context.Produtos.AddAsync(new Produto(Guid.NewGuid(), categoriaId, userId, "Headphone Philips bluetooth on-ear com microfone e energia para 15 horas na cor preto TAH1108BK/55", "Tenha a experiência sonora Philips. Curta cada minuto de suas músicas e conteúdos com um som nítido e com todas as frequências aguda, média e grave bem definidas", 102, 100, "imagem-base.jpg", email));
+            await context.Produtos.AddAsync(new Produto(Guid.NewGuid(), categoriaId, userId, "Headphone Philips bluetooth on-ear com microfone e energia para 15 horas na cor preto TAH1108BK/55", "Tenha a experiência sonora Philips. Curta cada minuto de suas músicas e conteúdos com um som nítido e com todas as frequências aguda, média e grave bem definidas", 102, 100, "/uploads/imagem-base.jpg", email));
             await context.SaveChangesAsync();
         }
     }

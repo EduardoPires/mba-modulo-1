@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using System.ComponentModel;
 using System.Text.Json.Serialization;
 
 namespace MLV.Business.Commands;
@@ -8,6 +9,8 @@ public class CategoriaRequest : RequestBase
     [JsonIgnore]
     public Guid Id { get; set; }
     public string Nome { get; set; }
+    [DisplayName("Descrição")]
+    public string Descricao { get; set; }
 
     public CategoriaRequest()
     {
@@ -31,6 +34,9 @@ public class CategoriaRequest : RequestBase
             RuleFor(m => m.Nome)
                 .NotEmpty()
                 .WithMessage("O campo {PropertyName} precisa ser fornecido")
+                .MaximumLength(100)
+                .WithMessage("O campo {PropertyName} não pode exceder {MaxLength} caracteres");
+            RuleFor(m => m.Descricao)
                 .MaximumLength(100)
                 .WithMessage("O campo {PropertyName} não pode exceder {MaxLength} caracteres");
         }

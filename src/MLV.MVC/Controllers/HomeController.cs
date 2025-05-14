@@ -1,16 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MLV.Business.Data.Repository.Interfaces;
+using MLV.Business.Models;
 using MLV.MVC.Models;
 using System.Diagnostics;
 
 namespace MLV.MVC.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, IProdutoRepository produtoRepository) : Controller
+    public class HomeController(ILogger<HomeController> logger, IProdutoRepository produtoRepository, ICategoriaRepository categoriaRepository) : Controller
     {
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid? categoriaId)
         {
             logger.LogInformation("Listando os produtos");
-            var produtos = await produtoRepository.ObterTodos();
+            var categorias = await categoriaRepository.ObterTodos();
+            ViewBag.Categorias = new SelectList(categorias, "Id", "Nome");
+            var produtos = await produtoRepository.ObterTodos(categoriaId);
             return View(produtos);
         }
 

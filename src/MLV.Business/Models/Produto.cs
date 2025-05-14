@@ -29,7 +29,7 @@ public class Produto : Entity
         CategoriaId = categoriaId;
         VendedorId = vendedorId;
         Nome = nome.Trim();
-        Descricao = descricao.Trim();
+        Descricao = descricao?.Trim();
         Valor = valor;
         Estoque = estoque;
         CaminhoImagem = caminhoImagem;
@@ -40,7 +40,7 @@ public class Produto : Entity
     {
         CategoriaId = categoriaId;
         Nome = nome.Trim();
-        Descricao = descricao.Trim();
+        Descricao = descricao?.Trim();
         Valor = valor;
         Estoque = estoque;
         UsuarioAlteracao = usuarioAlteracao;

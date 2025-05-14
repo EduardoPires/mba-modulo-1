@@ -51,11 +51,13 @@ public class ProdutoRequest : RequestBase
             RuleFor(m => m.Valor)
                 .GreaterThan(0)
                 .WithMessage("O campo {PropertyName} precisa ser fornecido e deve ser maior do que zero")
-                .PrecisionScale(10, 2, false)
-                .WithMessage("O campo {PropertyName} não pode exceder os {ExpectedScale} dígitos de casas decimais.");
+                .PrecisionScale(18, 2, false)
+                .WithMessage("O campo {PropertyName} não pode exceder os {ExpectedPrecision} dígitos totais e/ou os {ExpectedScale} dígitos de casas decimais.");
             RuleFor(m => m.Estoque)
                 .GreaterThan(0)
-                .WithMessage("O campo {PropertyName} precisa ser fornecido e deve ser maior do que zero");
+                .WithMessage("O campo {PropertyName} precisa ser fornecido e deve ser maior do que zero")
+                .LessThanOrEqualTo(1000000)
+                .WithMessage("O campo {PropertyName} não pode exceder o valor de {ComparisonValue} itens de estoque");
             RuleFor(m => m.Imagem)
                 .NotEmpty()
                 .WithMessage("O campo {PropertyName} precisa ser fornecido");

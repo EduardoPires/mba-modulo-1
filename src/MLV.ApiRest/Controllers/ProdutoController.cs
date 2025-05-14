@@ -14,14 +14,16 @@ namespace MLV.ApiRest.Controllers;
 public class ProdutoController(IProdutoRepository produtoRepository,
                       IProdutoService produtoService) : MainController
 {
+    private const string _caminhoImagemMvc = "..\\MLV.MVC\\wwwroot";
+
     [AllowAnonymous]
     [HttpGet()]
-    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Vendedor>))]
-    public async Task<ActionResult> ObterTodos()
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Produto>))]
+    public async Task<ActionResult> ObterTodos(Guid? categoriaId)
     {
-        var vendedores = await produtoRepository.ObterTodos();
+        var produtos = await produtoRepository.ObterTodos(categoriaId);
 
-        return CustomResponse(vendedores);
+        return CustomResponse(produtos);
     }
 
     [AllowAnonymous]
@@ -34,12 +36,21 @@ public class ProdutoController(IProdutoRepository produtoRepository,
         return CustomResponse(produto);
     }
 
+    [HttpGet("por-vendedor")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<Produto>))]
+    public async Task<ActionResult> ObterTodosPorVendedor()
+    {
+        var produtos = await produtoService.ObterProdutosPorVendedorId();
+
+        return CustomResponse(produtos);
+    }
+
     [HttpPost()]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ValidationProblemDetails))]
     public async Task<ActionResult> Criar(ProdutoRequest request)
     {
-        request.WebRootPath = "D:\\Estudos\\MBA\\mba-modulo-1\\src\\MLV.MVC\\wwwroot";
+        request.WebRootPath = Path.GetFullPath(_caminhoImagemMvc);
 
         var result = await produtoService.Adicionar(request);
 
@@ -61,6 +72,7 @@ public class ProdutoController(IProdutoRepository produtoRepository,
             return NotFound();
 
         request.Id = id;
+        request.WebRootPath = Path.GetFullPath(_caminhoImagemMvc);
         var result = await produtoService.Alterar(request);
 
         if (!result.IsValid)

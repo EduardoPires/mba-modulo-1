@@ -26,9 +26,10 @@ public class ProdutoRepository(MlvDbContext context) : IProdutoRepository
         context.Produtos.Remove(model);
     }
 
-    public async Task<List<Produto>> ObterTodos()
+    public async Task<List<Produto>> ObterTodos(Guid? categoriaId)
     {
         return await context.Produtos
+            .Where(a => !categoriaId.HasValue || a.CategoriaId == categoriaId.Value)
             .Include(a => a.Categoria)
             .Include(a => a.Vendedor)
             .AsNoTracking()
